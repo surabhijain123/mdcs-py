@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Copyright 2016 Esri
+# Copyright 2021 Esri
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -14,9 +14,9 @@
 # ------------------------------------------------------------------------------
 # Name: logger.py
 # Description: Class to log status from Imagery w/f components to log files.
-# Version: 20201230
+# Version: 20210427
 # Requirements: Python
-# Author: Esri Imagery Workflows team
+# Author: Esri Imagery Workflows Team
 # ------------------------------------------------------------------------------
 # !/usr/bin/env python
 
@@ -87,7 +87,8 @@ class Logger(object):
             start_time = self.projects[self.active_key][const_start_time_node]
             duration = end_time - start_time
             self.projects[self.active_key]['EndTime'] = end_time
-            self.projects[self.active_key]['DurationLabel'] = "%u" % (duration.total_seconds())
+            self.projects[self.active_key]['DurationLabel'] = "%u" % (
+                duration.total_seconds())
 
         self.SetCurrentCategory('')
 
@@ -120,6 +121,9 @@ class Logger(object):
             return False
         if (self.active_key == ''):
             self.SetCurrentCategory('')
+        msg = message
+        if (isinstance(msg, bytes)):
+            msg = bytes.decode(message)
         key = self.active_key
         errorTypeText = 'msg'
         if (messageType is None or
@@ -127,30 +131,38 @@ class Logger(object):
                 messageType == self.const_status_text):
             if (messageType == self.const_status_text):
                 errorTypeText = 'status'
-            self.projects[key]['logs']['message'].append({'text': message, 'type': errorTypeText})
+            self.projects[key]['logs']['message'].append(
+                {'text': msg, 'type': errorTypeText})
         elif(messageType > self.const_general_text):  # warning
             errorTypeText = 'warning'
             if (messageType == self.const_critical_text):
                 errorTypeText = "critical"
-            self.projects[key]['logs']['message'].append({'error': {'type': errorTypeText, 'text': message}})
-        _message = 'log-' + errorTypeText + ': ' + message  # print out error message to console while logging.
+            self.projects[key]['logs']['message'].append(
+                {'error': {'type': errorTypeText, 'text': msg}})
+        # print out error message to console while logging.
+        _message = 'log-{}:{}'.format(errorTypeText, msg)
         if (self.isGPRun):
             try:
                 import arcpy
                 if (messageType == self.const_warning_text):
                     arcpy.AddWarning(_message)
                 elif (messageType == self.const_critical_text):
-                    arcpy.AddWarning(_message)      # arcpy.AddError causes a crash. For now, all critical errors are shown as warnings.
+                    # arcpy.AddError causes a crash. For now, all critical errors are shown as warnings.
+                    arcpy.AddWarning(_message)
                 else:
                     arcpy.AddMessage(_message)
             except:
                 pass
         else:
             if (self.isPrint):          # via (self.isPrint) clients can disable the default printToConsole/print
-                print (_message)        # if a client side msgCallback has been set.
+                # if a client side msgCallback has been set.
+                print(_message)
             msg_type = 'general'        # msg-code
             if (self.m_base):
-                self.m_base.invoke_cli_msg_callback(msg_type, [_message])
+                if (hasattr(self.m_base, 'invoke_cli_msg_callback')):   # used by MDCS
+                    self.m_base.invoke_cli_msg_callback(msg_type, [_message])
+                elif(hasattr(self.m_base, 'writeToConsole')):  # used by OptimizeRasters
+                    self.m_base.writeToConsole(_message)
         return True
 
     def WriteLog(self, project):
@@ -177,7 +189,8 @@ class Logger(object):
             eleParent.appendChild(endLogNode)
             durationLogNode = doc.createElement('TotalDuration')
             duration = end_time - self.start_time
-            durationLogNode.appendChild(doc.createTextNode("%u" % (duration.total_seconds())))
+            durationLogNode.appendChild(doc.createTextNode(
+                "%u" % (duration.total_seconds())))
             eleParent.appendChild(durationLogNode)
         eleDoc.appendChild(eleParent)
         doc.appendChild(eleDoc)
@@ -196,15 +209,17 @@ class Logger(object):
                                 if (msg['type'] == 'status'):
                                     nodeName = 'Status'
                                 eleMessage = doc.createElement(nodeName)
-                                eleText = doc.createTextNode(msg['text'])
+                                eleText = doc.createTextNode(str(msg['text']))
                                 eleMessage.appendChild(eleText)
                                 msgNode = eleMessage
                             elif('error' in msg.keys()):
                                 eleError = doc.createElement('Error')
                                 eleErrorType = doc.createElement('type')
-                                eleErrorType.appendChild(doc.createTextNode(msg['error']['type']))
+                                eleErrorType.appendChild(
+                                    doc.createTextNode(msg['error']['type']))
                                 eleErrorText = doc.createElement('text')
-                                eleErrorText.appendChild(doc.createTextNode(msg['error']['text']))
+                                eleErrorText.appendChild(
+                                    doc.createTextNode(msg['error']['text']))
                                 eleError.appendChild(eleErrorType)
                                 eleError.appendChild(eleErrorText)
                                 # if warning/error begins without a parent 'Message' node, create an empty 'Message' parent node.
@@ -218,7 +233,8 @@ class Logger(object):
                                 eleProject.appendChild(eleMessage)
                         if ('DurationLabel' in self.projects[prj].keys()):
                             durationLogNode = doc.createElement('Duration')
-                            durationLogNode.appendChild(doc.createTextNode(self.projects[prj]['DurationLabel']))
+                            durationLogNode.appendChild(doc.createTextNode(
+                                self.projects[prj]['DurationLabel']))
                             if (key_ == '__root'):
                                 eleParent.appendChild(durationLogNode)
                             else:
@@ -248,4 +264,4 @@ class Logger(object):
             c.write(doc.toprettyxml())
             c.close()
         except:
-            print ("\nError creating log file.")
+            print("\nError creating log file.")
