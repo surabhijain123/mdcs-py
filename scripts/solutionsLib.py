@@ -2809,7 +2809,7 @@ class Solutions(Base.Base):
             if (
                 status
                 == False  # do not continue with any following commands if AR / user defined function commands fail.
-                and (cmd in ["AR", "CM", "CBA", "ABA"] or is_user_cmd)
+                and (cmd in ["AR", "CM", "CBA", "ABA", "MTC"] or is_user_cmd)
             ):
                 if self.on_exit():
                     aryCmds = [self.m_base.EVT_ON_EXIT]
