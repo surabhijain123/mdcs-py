@@ -1517,15 +1517,17 @@ class Solutions(Base.Base):
                 if (os.path.exists(cacheLocation)) == False:
                     os.makedirs(cacheLocation)
                 self.log("Running Manage Tile Cache tool with following params:", self.m_log.const_general_text)
-                self.log("\tCache Location: %s" % (cacheLocation), self.m_log.const_general_text)
-                self.log("\tManage Mode: %s" % (self.getProcessInfoValue(processKey, "manage_mode", index)), self.m_log.const_general_text)
-                self.log("\tCache Name: %s" % (self.getProcessInfoValue(processKey, "in_cache_name", index)), self.m_log.const_general_text)
-                self.log("\tTiling Scheme: %s" % (self.getProcessInfoValue(processKey, "tiling_scheme", index)), self.m_log.const_general_text)
-                self.log("\tScales: %s" % (self.getProcessInfoValue(processKey, "scales", index)), self.m_log.const_general_text)
-                self.log("\tArea of Interest: %s" % (self.getProcessInfoValue(processKey, "area_of_interest", index)), self.m_log.const_general_text)
-                self.log("\tMax Cell Size: %s" % (self.getProcessInfoValue(processKey, "max_cell_size", index)), self.m_log.const_general_text)
-                self.log("\tMin Cached Scale: %s" % (self.getProcessInfoValue(processKey, "min_cached_scale", index)), self.m_log.const_general_text)
-                self.log("\tMax Cached Scale: %s" % (self.getProcessInfoValue(processKey, "max_cached_scale", index)), self.m_log.const_general_text)
+                self.log(f"\t\tCache Location: {cacheLocation}", self.m_log.const_general_text)
+                self.log(f"\t\tManage Mode: {self.getProcessInfoValue(processKey, 'manage_mode', index)}", self.m_log.const_general_text)
+                self.log(f"\t\tCache Name: {self.getProcessInfoValue(processKey, 'in_cache_name', index)}", self.m_log.const_general_text)
+                self.log(f"\t\tInput Data Source: {mdName}", self.m_log.const_general_text)
+                self.log(f"\t\tInput Tiling Scheme: {self.getProcessInfoValue(processKey, 'tiling_scheme', index)}", self.m_log.const_general_text)
+                self.log(f"\t\tImport Tiling Scheme: {tileSchemeMtc}", self.m_log.const_general_text)
+                self.log(f"\t\tScales: {self.getProcessInfoValue(processKey, 'scales', index)}", self.m_log.const_general_text)
+                self.log(f"\t\tArea of Interest: {self.getProcessInfoValue(processKey, 'area_of_interest', index)}", self.m_log.const_general_text)
+                self.log(f"\t\tMax Cell Size: {self.getProcessInfoValue(processKey, 'max_cell_size', index)}", self.m_log.const_general_text)
+                self.log(f"\t\tMin Cached Scale: {self.getProcessInfoValue(processKey, 'min_cached_scale', index)}", self.m_log.const_general_text)
+                self.log(f"\t\tMax Cached Scale: {self.getProcessInfoValue(processKey, 'max_cached_scale', index)}", self.m_log.const_general_text)
                 result = arcpy.ManageTileCache_management(
                     cacheLocation,
                     self.getProcessInfoValue(processKey, 'manage_mode', index),
