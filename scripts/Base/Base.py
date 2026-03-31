@@ -47,6 +47,21 @@ try:
 except BaseException:
     print('arcpy.ia is not available.')
 
+def log_gptool_result(logger_method, log_level, result):
+    """
+    Parse GPTool result object to log input parameters, messages, status, outputs, etc.
+    This method can be called after executing a GPTool to capture all relevant information for debugging a GPTool execution.
+
+    Input: 
+        logger_obj - the logger object to use for logging the parsed information.
+        log_level - the log level to use for logging the parsed information.
+        result - the result object returned by a GPTool execution.
+    """
+    logger_method(f"GPTool input: {[result.getInput(ind) for ind in range(result.inputCount)]}", log_level)
+    logger_method(f"GPTool messages: {result.getAllMessages()}", log_level)
+    logger_method(f"GPTool status: {result.status}", log_level)
+    logger_method(f"GPTool output: {[result.getOutput(ind) for ind in range(result.outputCount)]}", log_level)
+    logger_method(f"GPTool resultID: {result.resultID}", log_level)
 
 class DynaInvoke:
     # log status types enums
@@ -115,6 +130,7 @@ class DynaInvoke:
                 if (hasattr(ret, fn)):
                     self.fnc_ptr = getattr(ret, fn)
                     ret = self.fnc_ptr(*self._sArgs)
+            log_gptool_result(self._message, self.const_general_text, ret)
             return True
         except Exception as exp:
             result = 'FAILED'

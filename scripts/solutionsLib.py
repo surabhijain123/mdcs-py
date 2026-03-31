@@ -25,6 +25,7 @@ import sys
 scriptPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(scriptPath, 'Base'))
 import Base
+from Base.Base import log_gptool_result
 import arcpy
 from defusedxml import minidom
 from string import ascii_letters, digits
@@ -1400,12 +1401,13 @@ class Solutions(Base.Base):
                     arcpy.SelectLayerByAttribute_management(
                         lyrName, "NEW_SELECTION", expression)
                     lyrName_footprint = lyrName  # + "/Footprint"
-                    arcpy.CalculateField_management(
+                    result = arcpy.CalculateField_management(
                         lyrName_footprint, self.getProcessInfoValue(
                             processKey, 'fieldname', index, indx), self.getProcessInfoValue(
                             processKey, 'expression', index, indx), self.getProcessInfoValue(
                             processKey, 'expression_type', index, indx), self.getProcessInfoValue(
                             processKey, 'code_block', index, indx))
+                    log_gptool_result(self.log, self.m_log.const_general_text, result)
                 except BaseException:
                     self.log(
                         arcpy.GetMessages(),
@@ -1514,7 +1516,17 @@ class Solutions(Base.Base):
                     processKey, 'in_cache_location', index)
                 if (os.path.exists(cacheLocation)) == False:
                     os.makedirs(cacheLocation)
-                arcpy.ManageTileCache_management(
+                self.log("Running Manage Tile Cache tool with following params:", self.m_log.const_general_text)
+                self.log("\tCache Location: %s" % (cacheLocation), self.m_log.const_general_text)
+                self.log("\tManage Mode: %s" % (self.getProcessInfoValue(processKey, "manage_mode", index)), self.m_log.const_general_text)
+                self.log("\tCache Name: %s" % (self.getProcessInfoValue(processKey, "in_cache_name", index)), self.m_log.const_general_text)
+                self.log("\tTiling Scheme: %s" % (self.getProcessInfoValue(processKey, "tiling_scheme", index)), self.m_log.const_general_text)
+                self.log("\tScales: %s" % (self.getProcessInfoValue(processKey, "scales", index)), self.m_log.const_general_text)
+                self.log("\tArea of Interest: %s" % (self.getProcessInfoValue(processKey, "area_of_interest", index)), self.m_log.const_general_text)
+                self.log("\tMax Cell Size: %s" % (self.getProcessInfoValue(processKey, "max_cell_size", index)), self.m_log.const_general_text)
+                self.log("\tMin Cached Scale: %s" % (self.getProcessInfoValue(processKey, "min_cached_scale", index)), self.m_log.const_general_text)
+                self.log("\tMax Cached Scale: %s" % (self.getProcessInfoValue(processKey, "max_cached_scale", index)), self.m_log.const_general_text)
+                result = arcpy.ManageTileCache_management(
                     cacheLocation,
                     self.getProcessInfoValue(processKey, 'manage_mode', index),
                     self.getProcessInfoValue(processKey, 'in_cache_name', index),
@@ -1526,6 +1538,7 @@ class Solutions(Base.Base):
                     self.getProcessInfoValue(processKey, 'max_cell_size', index),
                     self.getProcessInfoValue(processKey, 'min_cached_scale', index),
                     self.getProcessInfoValue(processKey, 'max_cached_scale', index))
+                log_gptool_result(self.log, self.m_log.const_general_text, result)
                 try:
                     if os.path.isfile(tileSchemeMtc):
                         cachepath = os.path.join(
@@ -1565,7 +1578,7 @@ class Solutions(Base.Base):
                 targetLocation = self.getProcessInfoValue(
                     processKey, 'in_target_cache_folder', index)
                 os.makedirs(targetLocation)
-                arcpy.ExportTileCache_management(
+                result = arcpy.ExportTileCache_management(
                     self.getProcessInfoValue(
                         processKey, 'in_cache_source', index), targetLocation, self.getProcessInfoValue(
                         processKey, 'in_target_cache_name', index), self.getProcessInfoValue(
@@ -1573,7 +1586,7 @@ class Solutions(Base.Base):
                         processKey, 'storage_format_type', index), self.getProcessInfoValue(
                         processKey, 'scales', index), self.getProcessInfoValue(
                             processKey, 'area_of_interest', index))
-
+                log_gptool_result(self.log, self.m_log.const_general_text, result)
                 return True
             except BaseException:
                 self.log(arcpy.GetMessages(), self.m_log.const_critical_text)
