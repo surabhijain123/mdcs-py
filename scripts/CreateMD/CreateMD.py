@@ -20,8 +20,6 @@
 # ------------------------------------------------------------------------------
 #!/usr/bin/env python
 
-from unittest import result
-
 import arcpy
 import os
 import sys
