@@ -26,7 +26,7 @@ import sys
 from defusedxml import minidom
 
 import Base
-
+from Base.Base import log_gptool_result
 
 class CreateMD(Base.Base):
 
@@ -82,7 +82,7 @@ class CreateMD(Base.Base):
             if (arcpy.Exists(mdPath)):
                 return self.m_base._updateResponse(resp, status=True, output=mdPath)
             self.log('\t{}'.format(self.m_base.m_mdName), self.const_general_text)
-            arcpy.CreateMosaicDataset_management(
+            result = arcpy.CreateMosaicDataset_management(
                 self.m_base.m_geoPath,
                 self.m_base.m_mdName,
                 self.srs,
@@ -91,6 +91,7 @@ class CreateMD(Base.Base):
                 self.product_definition,
                 self.product_band_definitions
             )
+            log_gptool_result(self.log, self.const_general_text, result)
             return self.m_base._updateResponse(resp, status=True, output=mdPath)
         except Exception as e:
             self.log('Failed!\n{}\n{}'.format(arcpy.GetMessages(), e), self.const_critical_text)
