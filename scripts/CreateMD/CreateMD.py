@@ -26,7 +26,7 @@ import sys
 from defusedxml import minidom
 
 import Base
-from Base.Base import log_gptool_result
+from Base import log_gptool_result
 
 class CreateMD(Base.Base):
 

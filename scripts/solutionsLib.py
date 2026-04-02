@@ -25,7 +25,7 @@ import sys
 scriptPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(scriptPath, 'Base'))
 import Base
-from Base.Base import log_gptool_result
+from Base import log_gptool_result
 import arcpy
 from defusedxml import minidom
 from string import ascii_letters, digits
