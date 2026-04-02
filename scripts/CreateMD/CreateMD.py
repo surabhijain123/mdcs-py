@@ -26,7 +26,6 @@ import sys
 from defusedxml import minidom
 
 import Base
-from Base.Base import log_gptool_result
 
 class CreateMD(Base.Base):
 
@@ -91,7 +90,7 @@ class CreateMD(Base.Base):
                 self.product_definition,
                 self.product_band_definitions
             )
-            log_gptool_result(self.log, self.const_general_text, result)
+            Base.log_gptool_result(self.log, self.const_general_text, result)
             return self.m_base._updateResponse(resp, status=True, output=mdPath)
         except Exception as e:
             self.log('Failed!\n{}\n{}'.format(arcpy.GetMessages(), e), self.const_critical_text)
