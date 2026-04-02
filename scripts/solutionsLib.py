@@ -1406,7 +1406,7 @@ class Solutions(Base.Base):
                             processKey, 'expression', index, indx), self.getProcessInfoValue(
                             processKey, 'expression_type', index, indx), self.getProcessInfoValue(
                             processKey, 'code_block', index, indx))
-                    Base.Base.log_gptool_result(self.log, self.m_log.const_general_text, result)
+                    Base.log_gptool_result(self.log, self.m_log.const_general_text, result)
                 except BaseException:
                     self.log(
                         arcpy.GetMessages(),
@@ -1539,7 +1539,7 @@ class Solutions(Base.Base):
                     self.getProcessInfoValue(processKey, 'max_cell_size', index),
                     self.getProcessInfoValue(processKey, 'min_cached_scale', index),
                     self.getProcessInfoValue(processKey, 'max_cached_scale', index))
-                Base.Base.log_gptool_result(self.log, self.m_log.const_general_text, result)
+                Base.log_gptool_result(self.log, self.m_log.const_general_text, result)
                 try:
                     if os.path.isfile(tileSchemeMtc):
                         cachepath = os.path.join(
@@ -1587,7 +1587,7 @@ class Solutions(Base.Base):
                         processKey, 'storage_format_type', index), self.getProcessInfoValue(
                         processKey, 'scales', index), self.getProcessInfoValue(
                             processKey, 'area_of_interest', index))
-                Base.Base.log_gptool_result(self.log, self.m_log.const_general_text, result)
+                Base.log_gptool_result(self.log, self.m_log.const_general_text, result)
                 return True
             except BaseException:
                 self.log(arcpy.GetMessages(), self.m_log.const_critical_text)
